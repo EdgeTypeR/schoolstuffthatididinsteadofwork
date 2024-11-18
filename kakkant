@@ -1,0 +1,8 @@
+#import math
+#print("a kör területe: ", float(input("kérem a kör sugarát: "))**2*math.pi)
+
+def osztas():
+    a = int(input("kérem az első számot: "))
+    b = int(input("kérem a második számot: "))
+    print("A "+ b + "megvan a(z) " + str(a) + "-ban")
+    

@@ -1,0 +1,2 @@
+nev=input("add meg a neved colos: ")
+print(f"csá {nev} ")

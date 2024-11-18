@@ -1,0 +1,54 @@
+import random
+import time
+import tkinter as tk
+from threading import Thread
+
+# ASCII grafika a dobókocka számjegyeihez
+dice_faces = {
+    1: "┌─────┐\n│     │\n│  ●  │\n│     │\n└─────┘",
+    2: "┌─────┐\n│ ●   │\n│     │\n│   ● │\n└─────┘",
+    3: "┌─────┐\n│ ●   │\n│  ●  │\n│   ● │\n└─────┘",
+    4: "┌─────┐\n│ ● ● │\n│     │\n│ ● ● │\n└─────┘",
+    5: "┌─────┐\n│ ● ● │\n│  ●  │\n│ ● ● │\n└─────┘",
+    6: "┌─────┐\n│ ● ● │\n│ ● ● │\n│ ● ● │\n└─────┘"
+}
+
+# Dobókocka animációt megvalósító függvény
+def roll_dice_animation(label):
+    for _ in range(10):  # 10-szer változtatja az animáció során a számot
+        roll = random.randint(1, 6)
+        label.config(text=dice_faces[roll])
+        label.update()
+        time.sleep(0.1)  # kis késleltetés a frissítés előtt
+
+# Dobókocka dobás függvény külön ablakban
+def create_dice_window():
+    # Új Tkinter ablak
+    window = tk.Toplevel()
+    window.title("Dobókocka Dobás")
+    window.geometry("200x150")
+
+    # Véletlenszerű pozíció generálása a képernyőn
+    x = random.randint(0, window.winfo_screenwidth() - 200)
+    y = random.randint(0, window.winfo_screenheight() - 150)
+    window.geometry(f"+{x}+{y}")
+
+    # Eredménycímke beállítása
+    result_label = tk.Label(window, text="", font=("Courier", 24), justify="center")
+    result_label.pack(pady=20)
+
+    # Dobás eredményének animálása és megjelenítése
+    roll_dice_animation(result_label)
+    final_result = random.randint(1, 6)
+    result_label.config(text=dice_faces[final_result])
+
+# Fő Tkinter ablak létrehozása és 10 ablak megnyitása külön szálakon
+root = tk.Tk()
+root.withdraw()  # fő ablak elrejtése
+
+# 10 dobókocka ablak létrehozása külön szálakon
+for _ in range(10):
+    Thread(target=create_dice_window).start()
+
+# Indítás
+root.mainloop()

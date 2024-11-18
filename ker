@@ -1,0 +1,6 @@
+a=int(input("kérem az a oldalt: "))
+b=int(input("kérem a b oldalt: "))
+k=2*(a+b)
+t=a*b
+print("a téglalap kerülete: ", str(k))
+print("a téglalap területe: ", str(t))

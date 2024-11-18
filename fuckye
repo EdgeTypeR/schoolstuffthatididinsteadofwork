@@ -1,0 +1,59 @@
+import math
+import os
+import time
+
+# Define constants for the animation
+A, B = 0, 0
+WIDTH, HEIGHT = 40, 22  # Width and height of the display
+CLEAR_SCREEN = 'cls' if os.name == 'nt' else 'clear'  # Command to clear console screen
+
+# ASCII characters to show depth
+CHARS = ".,-~:;=!*#$@"
+
+def render_frame(A, B):
+    # Initialize buffers
+    z = [0] * (WIDTH * HEIGHT)
+    output = [' '] * (WIDTH * HEIGHT)
+    
+    # Theta and phi increments for finer rotation
+    for theta in range(0, 628, 7):   # theta from 0 to 2π, steps of 7
+        for phi in range(0, 628, 2):  # phi from 0 to 2π, steps of 2
+            # Calculate sine and cosine for angles
+            cos_A, sin_A = math.cos(A), math.sin(A)
+            cos_B, sin_B = math.cos(B), math.sin(B)
+            cos_theta, sin_theta = math.cos(theta / 100), math.sin(theta / 100)
+            cos_phi, sin_phi = math.cos(phi / 100), math.sin(phi / 100)
+
+            # 3D coordinates
+            circle_x = cos_theta + 2  # R1 + R2*cos(theta)
+            circle_y = sin_theta
+
+            # 3D -> 2D projection
+            x = int(WIDTH / 2 + WIDTH / 4 * circle_x * (cos_B * cos_phi - sin_A * sin_B * sin_phi))
+            y = int(HEIGHT / 2 + HEIGHT / 4 * circle_y * (cos_A * sin_B * cos_phi + cos_B * sin_A * sin_phi))
+
+            # Ensure x and y stay within bounds
+            if 0 <= x < WIDTH and 0 <= y < HEIGHT:
+                # Depth calculation
+                ooz = 1 / (sin_phi * circle_x * sin_A + circle_y * cos_A + 5)
+                luminance_index = int(8 * ((sin_phi * circle_x * cos_A - circle_y * sin_A) * cos_B - sin_phi * circle_x * sin_B))
+
+                # Update output buffer if ooz is greater (nearer)
+                if ooz > z[y * WIDTH + x]:
+                    z[y * WIDTH + x] = ooz
+                    output[y * WIDTH + x] = CHARS[max(0, min(len(CHARS) - 1, luminance_index))]
+
+    # Display the frame
+    os.system(CLEAR_SCREEN)
+    for i in range(HEIGHT):
+        print(''.join(output[i * WIDTH:(i + 1) * WIDTH]))
+
+# Animation loop
+try:
+    while True:
+        render_frame(A, B)
+        A += 0.04
+        B += 0.02
+        time.sleep(0.03)
+except KeyboardInterrupt:
+    pass
